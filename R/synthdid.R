@@ -187,7 +187,9 @@ synthdid_estimate <- function(Y, N0, T0, X=array(dim=c(dim(Y),0)),
     
     X.beta = contract3(X, weights$beta)
     estimate = t(c(-weights$omega, rep(1/N1,N1))) %*% (Y - X.beta) %*% c(-weights$lambda, rep(1/T1, T1))
-
+    post_residuals = cbind(matrix(rep(-weights$omega, N1), nrow=N1, byrow=True), diag(N1)) %*% (Y - X.beta) %*% rbind(matrix(rep(-weights$lambda, T1), ncol=T1), diag(T1))
+    pre_residuals = cbind(matrix(rep(-weights$omega, N1), nrow=N1, byrow=True), diag(N1)) %*% cbind((Y - X.beta)[:, :T0], (Y - X.beta)[:, :T0])  %*% rbind(matrix(rep(-weights$lambda, T0), ncol=T0), diag(T0))
+	
     class(estimate) = 'synthdid'
     attr(estimate, 'weights') = weights
     attr(estimate, 'setup') = list(Y=Y, X=X, N0=N0, T0=T0)
